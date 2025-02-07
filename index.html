@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Love Memoir</title>
+    <style>
+        body {
+            font-family: 'Dancing Script', cursive;
+            background-color: #ffcccc;
+            text-align: center;
+            padding: 20px;
+            background-image: url('https://www.transparenttextures.com/patterns/hearts.png');
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 15px rgba(255, 0, 0, 0.3);
+        }
+        h1 {
+            color: #ff4d4d;
+            font-size: 36px;
+        }
+        .memory {
+            border: 2px solid #ff4d4d;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: #fff0f5;
+            box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.2);
+            position: relative;
+        }
+        .memory img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.3);
+        }
+        .delete-btn {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .delete-btn:hover {
+            background-color: #cc0000;
+        }
+        button {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #cc0000;
+        }
+        textarea {
+            font-family: 'Dancing Script', cursive;
+            font-size: 18px;
+            border: 2px solid #ff4d4d;
+            border-radius: 10px;
+            padding: 10px;
+            width: 80%;
+            background: #fff0f5;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <h1>Our Love Memoir ❤️</h1>
+    <div class="container">
+        <input type="file" id="imageInput" accept="image/*"><br><br>
+        <textarea id="textInput" placeholder="Write about this moment..." rows="4" cols="50"></textarea><br><br>
+        <button onclick="addMemory()">Add Memory</button>
+        <div id="memories"></div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", loadMemories);
+
+        function addMemory() {
+            let fileInput = document.getElementById("imageInput");
+            let textInput = document.getElementById("textInput").value;
+            
+            if (fileInput.files.length === 0 || textInput.trim() === "") {
+                alert("Please select an image and write some text.");
+                return;
+            }
+            
+            let reader = new FileReader();
+            reader.onload = function(event) {
+                let memories = JSON.parse(localStorage.getItem("memories")) || [];
+                let memory = {
+                    image: event.target.result,
+                    text: textInput
+                };
+                memories.push(memory);
+                localStorage.setItem("memories", JSON.stringify(memories));
+                
+                displayMemory(memory, memories.length - 1);
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        }
+
+        function loadMemories() {
+            let memories = JSON.parse(localStorage.getItem("memories")) || [];
+            memories.forEach((memory, index) => displayMemory(memory, index));
+        }
+
+        function displayMemory(memory, index) {
+            let memoriesDiv = document.getElementById("memories");
+            let memoryDiv = document.createElement("div");
+            memoryDiv.classList.add("memory");
+            memoryDiv.setAttribute("data-index", index);
+            
+            let img = document.createElement("img");
+            img.src = memory.image;
+            
+            let text = document.createElement("p");
+            text.textContent = memory.text;
+            
+            let deleteBtn = document.createElement("button");
+            deleteBtn.textContent = "Delete";
+            deleteBtn.classList.add("delete-btn");
+            deleteBtn.onclick = function() { deleteMemory(index); };
+            
+            memoryDiv.appendChild(img);
+            memoryDiv.appendChild(text);
+            memoryDiv.appendChild(deleteBtn);
+            memoriesDiv.appendChild(memoryDiv);
+        }
+
+        function deleteMemory(index) {
+            let memories = JSON.parse(localStorage.getItem("memories")) || [];
+            memories.splice(index, 1);
+            localStorage.setItem("memories", JSON.stringify(memories));
+            
+            document.getElementById("memories").innerHTML = "";
+            loadMemories();
+        }
+    </script>
+</body>
+</html>
