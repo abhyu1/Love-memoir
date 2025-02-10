@@ -26,11 +26,11 @@
             memoryDiv.classList.add("memory");
             memoryDiv.setAttribute("data-id", id);
             
-            memoryDiv.innerHTML = 
+            memoryDiv.innerHTML = `
                 <img src="${memory.image}" alt="Memory Image">
                 <p>${memory.text}</p>
                 <button class="delete-btn" onclick="deleteMemory('${id}')">Delete</button>
-            ;
+            `;
             
             memoriesDiv.appendChild(memoryDiv);
         }
@@ -67,7 +67,7 @@
         
         window.deleteMemory = async function(id) {
             await deleteDoc(doc(db, "memories", id));
-            document.querySelector([data-id='${id}']).remove();
+            document.querySelector(`[data-id='${id}']`).remove();
         };
         
         document.addEventListener("DOMContentLoaded", loadMemories);
@@ -186,4 +186,4 @@
         <div id="memories"></div>
     </div>
 </body>
-</html> 
+</html>
