@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our Love Letters</title>
+    <title>Our Love Memoir</title>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-firestore.js";
@@ -20,8 +20,8 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        window.addLetter = async function() {
-            let letterInput = document.getElementById("letterInput").value;
+        window.addLetter = async function(collectionName, inputId, containerId) {
+            let letterInput = document.getElementById(inputId).value;
             
             if (letterInput.trim() === "") {
                 alert("Please write something in the letter.");
@@ -33,38 +33,41 @@
                 timestamp: new Date().toISOString()
             };
             
-            const docRef = await addDoc(collection(db, "letters"), letter);
-            displayLetter(letter, docRef.id);
-            document.getElementById("letterInput").value = "";
+            const docRef = await addDoc(collection(db, collectionName), letter);
+            displayLetter(letter, docRef.id, containerId);
+            document.getElementById(inputId).value = "";
         };
         
-        function displayLetter(letter, id) {
-            const lettersDiv = document.getElementById("letters");
+        function displayLetter(letter, id, containerId) {
+            const lettersDiv = document.getElementById(containerId);
             let letterDiv = document.createElement("div");
             letterDiv.classList.add("letter");
             letterDiv.setAttribute("data-id", id);
             
             letterDiv.innerHTML = `
                 <p>${letter.text}</p>
-                <button class="delete-btn" onclick="deleteLetter('${id}')">Delete</button>
+                <button class="delete-btn" onclick="deleteLetter('${id}', '${containerId}')">Delete</button>
             `;
             
             lettersDiv.appendChild(letterDiv);
         }
         
-        async function loadLetters() {
-            const querySnapshot = await getDocs(collection(db, "letters"));
+        async function loadLetters(collectionName, containerId) {
+            const querySnapshot = await getDocs(collection(db, collectionName));
             querySnapshot.forEach(doc => {
-                displayLetter(doc.data(), doc.id);
+                displayLetter(doc.data(), doc.id, containerId);
             });
         }
         
-        window.deleteLetter = async function(id) {
-            await deleteDoc(doc(db, "letters", id));
+        window.deleteLetter = async function(id, containerId) {
+            await deleteDoc(doc(db, containerId, id));
             document.querySelector(`[data-id='${id}']`).remove();
         };
         
-        document.addEventListener("DOMContentLoaded", loadLetters);
+        document.addEventListener("DOMContentLoaded", () => {
+            loadLetters("abhyu_letters", "abhyuLetters");
+            loadLetters("aru_letters", "aruLetters");
+        });
     </script>
     <style>
         body {
@@ -75,12 +78,17 @@
             background-image: url('https://www.transparenttextures.com/patterns/hearts.png');
         }
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: auto;
             background: white;
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0px 0px 15px rgba(255, 0, 0, 0.3);
+            display: flex;
+            justify-content: space-between;
+        }
+        .letter-section {
+            width: 48%;
         }
         .letter {
             border: 2px solid #ff4d4d;
@@ -89,57 +97,25 @@
             border-radius: 10px;
             background: #fff0f5;
             box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.2);
-            position: relative;
-        }
-        .delete-btn {
-            background-color: #ff4d4d;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            font-size: 14px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: 0.3s;
-            position: absolute;
-            top: 10px;
-            right: 10px;
-        }
-        .delete-btn:hover {
-            background-color: #cc0000;
-        }
-        button {
-            background-color: #ff4d4d;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        button:hover {
-            background-color: #cc0000;
-        }
-        textarea {
-            font-family: 'Dancing Script', cursive;
-            font-size: 18px;
-            border: 2px solid #ff4d4d;
-            border-radius: 10px;
-            padding: 10px;
-            width: 80%;
-            background: #fff0f5;
         }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Our Love Letters 💌</h1>
+    <h1>Our Love Memoir ❤️</h1>
     <div class="container">
-        <a href="index.html">Back to Memories</a>
-        <h2>Write a Letter</h2>
-        <textarea id="letterInput" placeholder="Write your letter..." rows="4" cols="50"></textarea><br><br>
-        <button onclick="addLetter()">Add Letter</button>
-        <div id="letters"></div>
+        <div class="letter-section">
+            <h2>Abhyu's Love Letters 💌</h2>
+            <textarea id="abhyuLetterInput" placeholder="Write your letter..." rows="4" cols="30"></textarea><br><br>
+            <button onclick="addLetter('abhyu_letters', 'abhyuLetterInput', 'abhyuLetters')">Add Letter</button>
+            <div id="abhyuLetters"></div>
+        </div>
+        <div class="letter-section">
+            <h2>Aru's Love Letters 💌</h2>
+            <textarea id="aruLetterInput" placeholder="Write your letter..." rows="4" cols="30"></textarea><br><br>
+            <button onclick="addLetter('aru_letters', 'aruLetterInput', 'aruLetters')">Add Letter</button>
+            <div id="aruLetters"></div>
+        </div>
     </div>
 </body>
 </html>
+
