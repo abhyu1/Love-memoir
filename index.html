@@ -19,6 +19,21 @@
         
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+
+        function displayMemory(memory, id) {
+            const memoriesDiv = document.getElementById("memories");
+            let memoryDiv = document.createElement("div");
+            memoryDiv.classList.add("memory");
+            memoryDiv.setAttribute("data-id", id);
+            
+            memoryDiv.innerHTML = `
+                <img src="${memory.image}" alt="Memory Image">
+                <p>${memory.text}</p>
+                <button class="delete-btn" onclick="deleteMemory('${id}')">Delete</button>
+            `;
+            
+            memoriesDiv.appendChild(memoryDiv);
+        }
         
         window.addMemory = async function() {
             let fileInput = document.getElementById("imageInput");
