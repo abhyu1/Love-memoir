@@ -20,57 +20,54 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        function displayMemory(memory, id) {
-            const memoriesDiv = document.getElementById("memories");
-            let memoryDiv = document.createElement("div");
-            memoryDiv.classList.add("memory");
-            memoryDiv.setAttribute("data-id", id);
+        window.addLetter = async function(collectionName, inputId, containerId) {
+            let letterInput = document.getElementById(inputId).value;
             
-            memoryDiv.innerHTML = `
-                <img src="${memory.image}" alt="Memory Image">
-                <p>${memory.text}</p>
-                <button class="delete-btn" onclick="deleteMemory('${id}')">Delete</button>
-            `;
-            
-            memoriesDiv.appendChild(memoryDiv);
-        }
-        
-        window.addMemory = async function() {
-            let fileInput = document.getElementById("imageInput");
-            let textInput = document.getElementById("textInput").value;
-            
-            if (fileInput.files.length === 0 || textInput.trim() === "") {
-                alert("Please select an image and write some text.");
+            if (letterInput.trim() === "") {
+                alert("Please write something in the letter.");
                 return;
             }
             
-            let reader = new FileReader();
-            reader.onload = async function(event) {
-                let memory = {
-                    image: event.target.result,
-                    text: textInput,
-                    timestamp: new Date().toISOString()
-                };
-                
-                const docRef = await addDoc(collection(db, "memories"), memory);
-                displayMemory(memory, docRef.id);
+            let letter = {
+                text: letterInput,
+                timestamp: new Date().toISOString()
             };
-            reader.readAsDataURL(fileInput.files[0]);
+            
+            const docRef = await addDoc(collection(db, collectionName), letter);
+            displayLetter(letter, docRef.id, containerId);
+            document.getElementById(inputId).value = "";
         };
         
-        async function loadMemories() {
-            const querySnapshot = await getDocs(collection(db, "memories"));
+        function displayLetter(letter, id, containerId) {
+            const lettersDiv = document.getElementById(containerId);
+            let letterDiv = document.createElement("div");
+            letterDiv.classList.add("letter");
+            letterDiv.setAttribute("data-id", id);
+            
+            letterDiv.innerHTML = `
+                <p>${letter.text}</p>
+                <button class="delete-btn" onclick="deleteLetter('${id}', '${containerId}')">Delete</button>
+            `;
+            
+            lettersDiv.appendChild(letterDiv);
+        }
+        
+        async function loadLetters(collectionName, containerId) {
+            const querySnapshot = await getDocs(collection(db, collectionName));
             querySnapshot.forEach(doc => {
-                displayMemory(doc.data(), doc.id);
+                displayLetter(doc.data(), doc.id, containerId);
             });
         }
         
-        window.deleteMemory = async function(id) {
-            await deleteDoc(doc(db, "memories", id));
+        window.deleteLetter = async function(id, containerId) {
+            await deleteDoc(doc(db, containerId, id));
             document.querySelector(`[data-id='${id}']`).remove();
         };
         
-        document.addEventListener("DOMContentLoaded", loadMemories);
+        document.addEventListener("DOMContentLoaded", () => {
+            loadLetters("abhyu_letters", "abhyuLetters");
+            loadLetters("aru_letters", "aruLetters");
+        });
     </script>
     <style>
         body {
@@ -81,18 +78,19 @@
             background-image: url('https://www.transparenttextures.com/patterns/hearts.png');
         }
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: auto;
             background: white;
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0px 0px 15px rgba(255, 0, 0, 0.3);
+            display: flex;
+            justify-content: space-between;
         }
-        h1 {
-            color: #ff4d4d;
-            font-size: 36px;
+        .letter-section {
+            width: 48%;
         }
-        .memory {
+        .letter {
             border: 2px solid #ff4d4d;
             margin-top: 20px;
             padding: 15px;
@@ -100,22 +98,11 @@
             background: #fff0f5;
             box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.2);
             position: relative;
-            display: flex;
-            align-items: center;
-            gap: 15px;
         }
-        .memory img {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.3);
-        }
-        .memory p {
+        .letter p {
             font-size: 20px;
             color: #ff4d4d;
             text-align: left;
-            flex-grow: 1;
         }
         .delete-btn {
             background-color: #ff4d4d;
@@ -155,11 +142,9 @@
             width: 80%;
             background: #fff0f5;
         }
-        .link-container {
+        .back-link {
+            display: block;
             margin-top: 20px;
-        }
-        .link-container a {
-            display: inline-block;
             font-size: 20px;
             color: white;
             background-color: #ff4d4d;
@@ -168,7 +153,7 @@
             text-decoration: none;
             transition: 0.3s;
         }
-        .link-container a:hover {
+        .back-link:hover {
             background-color: #cc0000;
         }
     </style>
@@ -176,14 +161,21 @@
 </head>
 <body>
     <h1>Our Love Memoir ❤️</h1>
+    <a href="index.html" class="back-link">⬅ Go Back to Love Memoirs</a>
     <div class="container">
-        <div class="link-container">
-            <a href="letters.html">Read Our Love Letters 💌</a>
+        <div class="letter-section">
+            <h2>Abhyu's Love Letters 💌</h2>
+            <textarea id="abhyuLetterInput" placeholder="Write your letter..." rows="4" cols="30"></textarea><br><br>
+            <button onclick="addLetter('abhyu_letters', 'abhyuLetterInput', 'abhyuLetters')">Add Letter</button>
+            <div id="abhyuLetters"></div>
         </div>
-        <input type="file" id="imageInput" accept="image/*"><br><br>
-        <textarea id="textInput" placeholder="Write about this moment..." rows="4" cols="50"></textarea><br><br>
-        <button onclick="addMemory()">Add Memory</button>
-        <div id="memories"></div>
+        <div class="letter-section">
+            <h2>Aru's Love Letters 💌</h2>
+            <textarea id="aruLetterInput" placeholder="Write your letter..." rows="4" cols="30"></textarea><br><br>
+            <button onclick="addLetter('aru_letters', 'aruLetterInput', 'aruLetters')">Add Letter</button>
+            <div id="aruLetters"></div>
+        </div>
     </div>
 </body>
 </html>
+
