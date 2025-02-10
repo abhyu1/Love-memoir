@@ -27,10 +27,8 @@
             memoryDiv.setAttribute("data-id", id);
             
             memoryDiv.innerHTML = `
-                <div class="memory-content">
-                    <img src="${memory.image}" alt="Memory Image">
-                    <p>${memory.text}</p>
-                </div>
+                <img src="${memory.image}" alt="Memory Image">
+                <p>${memory.text}</p>
                 <button class="delete-btn" onclick="deleteMemory('${id}')">Delete</button>
             `;
             
@@ -113,16 +111,11 @@
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.3);
         }
-        .memory-content {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-grow: 1;
-        }
         .memory p {
             font-size: 20px;
             color: #ff4d4d;
             text-align: left;
+            flex-grow: 1;
         }
         .delete-btn {
             background-color: #ff4d4d;
@@ -162,12 +155,31 @@
             width: 80%;
             background: #fff0f5;
         }
+        .link-container {
+            margin-top: 20px;
+        }
+        .link-container a {
+            display: inline-block;
+            font-size: 20px;
+            color: white;
+            background-color: #ff4d4d;
+            padding: 10px 15px;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .link-container a:hover {
+            background-color: #cc0000;
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <h1>Our Love Memoir ❤️</h1>
     <div class="container">
+        <div class="link-container">
+            <a href="letters.html">Read Our Love Letters 💌</a>
+        </div>
         <input type="file" id="imageInput" accept="image/*"><br><br>
         <textarea id="textInput" placeholder="Write about this moment..." rows="4" cols="50"></textarea><br><br>
         <button onclick="addMemory()">Add Memory</button>
@@ -175,4 +187,3 @@
     </div>
 </body>
 </html>
-
