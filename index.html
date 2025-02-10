@@ -27,10 +27,8 @@
             memoryDiv.setAttribute("data-id", id);
             
             memoryDiv.innerHTML = `
-                <div class="memory-content">
-                    <img src="${memory.image}" alt="Memory Image">
-                    <p>${memory.text}</p>
-                </div>
+                <img src="${memory.image}" alt="Memory Image">
+                <p>${memory.text}</p>
                 <button class="delete-btn" onclick="deleteMemory('${id}')">Delete</button>
             `;
             
@@ -102,27 +100,11 @@
             background: #fff0f5;
             box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.2);
             position: relative;
-            display: flex;
-            align-items: center;
-            gap: 15px;
         }
         .memory img {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
+            max-width: 100%;
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.3);
-        }
-        .memory-content {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-grow: 1;
-        }
-        .memory p {
-            font-size: 20px;
-            color: #ff4d4d;
-            text-align: left;
         }
         .delete-btn {
             background-color: #ff4d4d;
@@ -168,6 +150,7 @@
 <body>
     <h1>Our Love Memoir ❤️</h1>
     <div class="container">
+        <a href="letters.html">Go to Love Letters</a>
         <input type="file" id="imageInput" accept="image/*"><br><br>
         <textarea id="textInput" placeholder="Write about this moment..." rows="4" cols="50"></textarea><br><br>
         <button onclick="addMemory()">Add Memory</button>
@@ -175,4 +158,3 @@
     </div>
 </body>
 </html>
-
