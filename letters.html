@@ -60,9 +60,11 @@
         }
         
         window.deleteLetter = async function(id, containerId) {
-            await deleteDoc(doc(db, containerId, id));
-            document.querySelector(`[data-id='${id}']`).remove();
-        };
+    const collectionName = containerId === "abhyuLetters" ? "abhyu_letters" : "aru_letters";
+    await deleteDoc(doc(db, collectionName, id));
+    document.querySelector(`[data-id='${id}']`).remove();
+};
+
         
         document.addEventListener("DOMContentLoaded", () => {
             loadLetters("abhyu_letters", "abhyuLetters");
